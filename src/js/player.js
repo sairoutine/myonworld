@@ -5,6 +5,8 @@
 var Player = function(gl, image) {
 	this.gl = gl;
 
+	this.position = [0.0, 0.0, 0.0];
+
 	// テクスチャを作成
 	this.texture = this.createTexture(gl, image);
 
