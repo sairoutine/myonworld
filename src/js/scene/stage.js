@@ -10,6 +10,7 @@ var worldV = require("../shader/world.vs");
 var worldF = require("../shader/world.fs");
 var billboardV = require("../shader/billboard.vs");
 var ShaderProgram = require("../shader_program");
+var Player = require("../player");
 
 
 
@@ -74,7 +75,7 @@ SceneStage.prototype.init = function() {
 		]
 	);
 
-	console.log(this.sprites_shader_program);
+	this.player = new Player(this.core.gl, this.core.image_loader.getImage("player"));
 };
 
 SceneStage.prototype.beforeDraw = function() {
