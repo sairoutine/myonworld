@@ -4,9 +4,7 @@ var CONSTANT = require('../hakurei').constant;
 var util = require('../hakurei').util;
 var glmat = require("gl-matrix");
 
-/*
-var PointLight = require("./point_light");
-*/
+var PointLight = require("../point_light");
 var worldV = require("../shader/world.vs");
 var worldF = require("../shader/world.fs");
 var billboardV = require("../shader/billboard.vs");
@@ -77,12 +75,21 @@ SceneStage.prototype.init = function() {
 	);
 
 	this.player = new Player(this.core.gl, this.core.image_loader.getImage("player"));
+
+	var light_color       = [1.0, 0.5, 0.0];
+	var light_position    = [0,0,1];
+	var light_attenuation = [0.3, 0.1, 0.05];
+	this.player_light = new PointLight(light_color, light_position, light_attenuation);
 };
 
 SceneStage.prototype.beforeDraw = function() {
 	base_scene.prototype.beforeDraw.apply(this, arguments);
 
 	this.player.update();
+	this.player_light.update();
+
+	// ライトはプレイヤーの今いる位置を照らす
+	this.player_light.moveToPlayer(this.player);
 };
 
 SceneStage.prototype.draw = function() {
@@ -121,7 +128,7 @@ SceneStage.prototype.renderPlayer = function() {
 	this.core.gl.uniform1f(this.sprites_shader_program.uniform_locations.uCounter, false, this.frame_count);
 	//this.core.gl.uniform3fv(this.data.sprites.u.AmbientColor, this.level.ambient);
 	//this.core.gl.uniform3fv(this.data.sprites.u.CamPos, this.camera.pos);
-	//this.updateLights(this.data.sprites);
+	this.updatePlayerLight();
 
 	// attribute 変数にデータを登録する
 	this.attribSetup(this.sprites_shader_program.uniform_locations.aPosition, this.player.vertexObject,  3);
@@ -155,6 +162,12 @@ SceneStage.prototype.attribSetup = function(attribute_location, buffer_object, s
 	this.core.gl.bindBuffer(this.core.gl.ARRAY_BUFFER, buffer_object);
 	// WebGL_API 24. attribute 属性を登録する(1頂点の要素数、型を登録)
 	this.core.gl.vertexAttribPointer(attribute_location, size, type, false, 0, 0);
+};
+
+SceneStage.prototype.updatePlayerLight = function(){
+	this.core.gl.uniform3fv(this.sprites_shader_program.uniform_locations.uLight[0].attenuation, this.player_light.attenuation);
+	this.core.gl.uniform3fv(this.sprites_shader_program.uniform_locations.uLight[0].color, this.player_light.color);
+	this.core.gl.uniform3fv(this.sprites_shader_program.uniform_locations.uLight[0].position, this.player_light.position);
 };
 
 
