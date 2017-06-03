@@ -74,7 +74,7 @@ SceneStage.prototype.init = function() {
 		]
 	);
 
-	this.player = new Player(this.core.gl, this.core.image_loader.getImage("player"));
+	this.player = new Player(this.core.gl, this.core.image_loader.getImage("enemy"));
 
 	var light_color       = [1.0, 0.5, 0.0];
 	var light_position    = [0,0,1];
@@ -100,8 +100,6 @@ SceneStage.prototype.draw = function() {
 	// Canvasの大きさとビューポートの大きさを合わせる
 	this.core.gl.viewport(0, 0, this.core.width, this.core.height);
 
-	//glmat.mat4.perspective(this.data.world.m.pMatrix, 45.0, this.core.width/this.core.height, 0.1, 100.0);
-
 	this.renderPlayer();
 
 	// WebGL_API 29. 描画
@@ -116,20 +114,48 @@ SceneStage.prototype.renderPlayer = function() {
 	this.sprites_shader_program.useProgram();
 
 
-	//this.data.world.m.vMatrix = this.camera.matrix;
+	//var vMatrix = this.camera.matrix;
+	var vMatrix = new Float32Array([
+1,
+0,
+0,
+0,
+0,
+0.5877852439880371,
+-0.80901700258255,
+0,
+-0,
+0.80901700258255,
+0.5877852439880371,
+0,
+-36.5,
+-14.600497245788574,
+8.70364761352539,
+1
+	]);
+
+	// mMatrix
+	var mMatrix = glmat.mat4.create();
+	glmat.mat4.identity(mMatrix);
+
+	// pMatrix
+	var pMatrix = glmat.mat4.create();
+	glmat.mat4.identity(pMatrix);
+	glmat.mat4.perspective(pMatrix, 45.0, this.core.width/this.core.height, 0.1, 100.0);
 	//this.sprites.sprites[0].theta = this.camera.theta[2];
-	var camera_matrix = glmat.mat4.create();
-	glmat.mat4.identity(camera_matrix);
 
 	// WebGL_API 21. uniform 変数にデータを登録する
 	// 4fv -> vec4, 3fv -> vec3, 1f -> float
-	//this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uMMatrix, false, null);
-	this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uVMatrix, false, camera_matrix);
-	//this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uPMatrix, false, null);
+	this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uMMatrix, false, mMatrix);
+	this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uVMatrix, false, vMatrix);
+	this.core.gl.uniformMatrix4fv(this.sprites_shader_program.uniform_locations.uPMatrix, false, pMatrix);
 
 	this.core.gl.uniform1f(this.sprites_shader_program.uniform_locations.uCounter, false, this.frame_count);
 	//this.core.gl.uniform3fv(this.data.sprites.u.AmbientColor, this.level.ambient);
 	//this.core.gl.uniform3fv(this.data.sprites.u.CamPos, this.camera.pos);
+	this.core.gl.uniform3fv(this.sprites_shader_program.uniform_locations.uAmbientColor, [0.1, 0.1, 0]);
+	this.core.gl.uniform3fv(this.sprites_shader_program.uniform_locations.uCamPos, [36.5, 15.623355547812945, 6.69617464448602]);
+
 	this.updatePlayerLight();
 
 	// attribute 変数にデータを登録する
