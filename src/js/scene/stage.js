@@ -97,7 +97,9 @@ SceneStage.prototype.draw = function() {
 	this.core.gl.clearColor.apply(this.core.gl, [0.0, 0.0, 0.0, 1.0]); // 真っ黒
 	this.core.gl.clear(this.core.gl.COLOR_BUFFER_BIT|this.core.gl.DEPTH_BUFFER_BIT); // 画面上の色をクリア + 深度バッファクリア
 
-	//this.core.gl.viewport(0, 0, this.core.width, this.core.height);
+	// Canvasの大きさとビューポートの大きさを合わせる
+	this.core.gl.viewport(0, 0, this.core.width, this.core.height);
+
 	//glmat.mat4.perspective(this.data.world.m.pMatrix, 45.0, this.core.width/this.core.height, 0.1, 100.0);
 
 	this.renderPlayer();
