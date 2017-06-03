@@ -14,18 +14,17 @@ var ShaderProgram = function(
 	var vs_shader = this.createShader(gl, gl.VERTEX_SHADER, vs_text);
 	// ピクセルシェーダ
 	var fs_shader = this.createShader(gl, gl.FRAGMENT_SHADER, fs_text);
-
 	// プログラム
 	var shader_program = this.createShaderProgram(gl, vs_shader, fs_shader);
 
 	var i;
-	// 09. 変数名が、シェーダ内での何番目の attribute 変数なのか取得
+	// WebGL_API 09. 変数名が、シェーダ内での何番目の attribute 変数なのか取得
 	var attribute_locations = {};
 	for (i=0; i < attribute_variables.length; i++) {
 		attribute_locations[ attribute_variables[i] ] = gl.getAttribLocation(shader_program, attribute_variables[i]);
 	}
 
-	// 10. 変数名が、シェーダ内での何番目の uniform 変数なのか取得
+	// WebGL_API 10. 変数名が、シェーダ内での何番目の uniform 変数なのか取得
 	var uniform_locations = {};
 	for (i=0; i < uniform_variables.length; i++) {
 		uniform_locations[ uniform_variables[i] ] = gl.getUniformLocation(shader_program, uniform_variables[i]);
