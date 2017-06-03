@@ -1,5 +1,6 @@
 'use strict';
 var glmat = require("gl-matrix");
+var PointLight = require("./point_light");
 
 var ShaderProgram = function(
 	gl,
@@ -32,18 +33,15 @@ var ShaderProgram = function(
 		uniform_locations[ uniform_variables[i] ] = gl.getUniformLocation(shader_program, uniform_variables[i]);
 	}
 
-	/* TODO:
-	// Uniform array of PointLight structs in GLSL
-	p.u["Light"] = [];
+	// 光源用の uniform array 変数取得
+	var uLight_locations = [];
 	for (i=0; i<4; i++) {
-		var l = p.u["Light"];
-		l[i] = {};
-		for (var key in new PointLight()) {
-			l[i][key] = gl.getUniformLocation(glProgram, "uLight["+i+"]."+key);
+		uLight_locations[i] = {};
+		for (var key in new PointLight()) { // TODO: not use Pointlight object
+			uLight_locations[i][key] = gl.getUniformLocation(shader_program, "uLight["+i+"]."+key);
 		}
 	}
-	*/
-
+	uniform_locations.uLight = uLight_locations;
 	/* TODO:
 	// Initialize matrices
 	for (var prop in mats) {
