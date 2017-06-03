@@ -3,9 +3,13 @@
 /* 自機 */
 
 var Player = function(gl, image) {
+	//TODO: delete
+	this.texture_atlas = new TextureAtlas(gl, image, 8);
+
 	this.gl = gl;
 
-	this.position = [0.0, 0.0, 0.0];
+	//this.position = [0.0, 0.0, 0.0];
+	this.position = [23.5,22.5,1.2];
 
 	// テクスチャを作成
 	this.texture = this.createTexture(gl, image);
@@ -84,20 +88,46 @@ Player.prototype.createParam = function() {
 		[ 0.5, 0.0, 0.0]
 	];
 
+	/*
 	var texture_st = [
 		[1.0, 0.0],
 		[0.0, 0.0],
 		[0.0, 1.0],
 		[1.0, 1.0]
 	];
+	*/
+this.vertices = [
+17.5,
+24.5,
+1.2,
+17.5,
+24.5,
+1.2,
+17.5,
+24.5,
+1.2,
+17.5,
+24.5,
+1.2
+];
 
 	for (var i=0; i<4; i++) {
-		this.vertices  = this.vertices.concat(pos);
+		//this.vertices  = this.vertices.concat(pos);
 		this.offsets   = this.offsets.concat(object[i]);
-		this.texCoords = this.texCoords.concat(texture_st[i]);
+		//this.texCoords = this.texCoords.concat(texture_st[i]);
 		this.moving.push(0);
 		this.flipped.push(0);
 	}
+
+	var st = this.texture_atlas.getST(0);
+
+	// テクスチャ座標を作成
+	this.texCoords = this.texCoords.concat(
+		st[2], st[1], 
+		st[0], st[1], 
+		st[0], st[3],
+		st[2], st[3]
+	);
 
 	this.indices.push(
 		this.baseIndex, this.baseIndex+1, this.baseIndex+2,
@@ -155,6 +185,27 @@ Player.prototype.offsetSprite = function(spriteId, d) {
 			this.vertices[spriteId*4+i*3+j] += d[j];
 };
 */
+
+var TextureAtlas = function(gl, image, tileSizePx) {
+	this.imageSizePx = image.width; // width must equal height
+
+	this.tileSizeNormalized = tileSizePx/this.imageSizePx;
+	this.paddingNormalized = 0.5/this.imageSizePx;
+	this.tilesPerRow = Math.floor(this.imageSizePx/tileSizePx);
+
+};
+TextureAtlas.prototype.getST = function(tileNum) {
+	var stRange = [
+		this.tileSizeNormalized * (tileNum % this.tilesPerRow) + this.paddingNormalized,
+		this.tileSizeNormalized * Math.floor(tileNum / this.tilesPerRow) + this.paddingNormalized,
+	];
+	stRange[2] = stRange[0] + this.tileSizeNormalized - this.paddingNormalized*1.5;
+	stRange[3] = stRange[1] + this.tileSizeNormalized - this.paddingNormalized*1.5;
+	return stRange;
+};
+
+
+
 
 
 module.exports = Player;
