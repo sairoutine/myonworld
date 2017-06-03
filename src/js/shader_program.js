@@ -1,15 +1,71 @@
 'use strict';
-/*
 var glmat = require("gl-matrix");
-var PointLight = require("./point_light");
-var worldV = require("./shader/world.vs");
-var worldF = require("./shader/world.fs");
-var billboardV = require("./shader/billboard.vs");
-*/
 
+var ShaderProgram = function(
+	gl,
+	vs_text,
+	fs_text,
+	attribute_variables,
+	uniform_variables
+	//mats
+) {
 
-var createShader = function (gl, type, source_text) {
-	if(type !== gl.VERTEX_SHADER || type !== gl.FRAGMENT_SHADER) {
+	// 頂点シェーダ
+	var vs_shader = this.createShader(gl, gl.VERTEX_SHADER, vs_text);
+	// ピクセルシェーダ
+	var fs_shader = this.createShader(gl, gl.FRAGMENT_SHADER, fs_text);
+
+	// プログラム
+	var shader_program = this.createShaderProgram(gl, vs_shader, fs_shader);
+
+	var i;
+	// 09. 変数名が、シェーダ内での何番目の attribute 変数なのか取得
+	var attribute_locations = {};
+	for (i=0; i < attribute_variables.length; i++) {
+		attribute_locations[ attribute_variables[i] ] = gl.getAttribLocation(shader_program, attribute_variables[i]);
+	}
+
+	// 10. 変数名が、シェーダ内での何番目の uniform 変数なのか取得
+	var uniform_locations = {};
+	for (i=0; i < uniform_variables.length; i++) {
+		uniform_locations[ uniform_variables[i] ] = gl.getUniformLocation(shader_program, uniform_variables[i]);
+	}
+
+	/* TODO:
+	// Uniform array of PointLight structs in GLSL
+	p.u["Light"] = [];
+	for (i=0; i<4; i++) {
+		var l = p.u["Light"];
+		l[i] = {};
+		for (var key in new PointLight()) {
+			l[i][key] = gl.getUniformLocation(glProgram, "uLight["+i+"]."+key);
+		}
+	}
+	*/
+
+	/* TODO:
+	// Initialize matrices
+	for (var prop in mats) {
+		var size = mats[prop];
+		var mat;
+		switch(size) {
+		case 2: mat = glmat.mat2; break;
+		case 3: mat = glmat.mat3; break;
+		case 4: mat = glmat.mat4; break;
+		default: console.log("Invalid matrix size");
+		}
+		p.m[prop] = mat.create();
+		mat.identity(p.m[prop]);
+	}
+	*/
+
+	this.shader_program = shader_program;
+	this.attribute_locations = attribute_locations;
+	this.uniform_locations = uniform_locations;
+};
+
+ShaderProgram.prototype.createShader = function (gl, type, source_text) {
+	if(type !== gl.VERTEX_SHADER && type !== gl.FRAGMENT_SHADER) {
 		throw new Error ("type must be vertex or fragment");
 	}
 
@@ -29,7 +85,24 @@ var createShader = function (gl, type, source_text) {
 	}
 
 	return shader;
-
 };
 
-module.exports = null;
+ShaderProgram.prototype.createShaderProgram = function(gl, vertex_shader, fragment_shader) {
+	// WebGL_API 05. プログラムオブジェクトの生成
+	var shaderProgram = gl.createProgram();
+
+	// WebGL_API 06. プログラムオブジェクトにシェーダを割り当てる
+	gl.attachShader(shaderProgram, vertex_shader);
+	gl.attachShader(shaderProgram, fragment_shader);
+
+	// WebGL_API 07. シェーダをリンク
+	gl.linkProgram(shaderProgram);
+
+	// WebGL_API 08. シェーダのリンクが正しく行なわれたかチェック
+	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		throw new Error("Could not initialize shaders:\n\n" + gl.getProgramInfoLog(shaderProgram));
+	}
+
+	return shaderProgram;
+};
+module.exports = ShaderProgram;
