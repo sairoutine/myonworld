@@ -10,6 +10,8 @@ var ShaderProgram = function(
 	//mats
 ) {
 
+	this.gl = gl;
+
 	// 頂点シェーダ
 	var vs_shader = this.createShader(gl, gl.VERTEX_SHADER, vs_text);
 	// ピクセルシェーダ
@@ -104,4 +106,10 @@ ShaderProgram.prototype.createShaderProgram = function(gl, vertex_shader, fragme
 
 	return shaderProgram;
 };
+
+ShaderProgram.prototype.useProgram = function() {
+	// WebGL_API 19. プログラムを有効にする
+	this.gl.useProgram(this.shader_program);
+};
+
 module.exports = ShaderProgram;
