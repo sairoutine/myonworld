@@ -16,7 +16,6 @@ SceneStage.prototype.beforeDraw = function() {
 	base_scene.prototype.beforeDraw.apply(this, arguments);
 };
 SceneStage.prototype.draw = function(){
-	console.log("ok");
 };
 
 module.exports = SceneStage;
