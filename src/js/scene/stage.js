@@ -159,11 +159,11 @@ SceneStage.prototype.renderPlayer = function() {
 	this.updatePlayerLight();
 
 	// attribute 変数にデータを登録する
-	this.attribSetup(this.sprites_shader_program.uniform_locations.aPosition, this.player.vertexObject,  3);
-	this.attribSetup(this.sprites_shader_program.uniform_locations.aTexture,  this.player.texCoordObject,2);
-	this.attribSetup(this.sprites_shader_program.uniform_locations.aOffset,   this.player.offsetObject,  3);
-	this.attribSetup(this.sprites_shader_program.uniform_locations.aMoving,   this.player.movingObject,  1);
-	this.attribSetup(this.sprites_shader_program.uniform_locations.aFlipped,  this.player.flippedObject, 1);
+	this.attribSetup(this.sprites_shader_program.attribute_locations.aPosition, this.player.vertexObject,  3);
+	this.attribSetup(this.sprites_shader_program.attribute_locations.aTexture,  this.player.texCoordObject,2);
+	this.attribSetup(this.sprites_shader_program.attribute_locations.aOffset,   this.player.offsetObject,  3);
+	this.attribSetup(this.sprites_shader_program.attribute_locations.aMoving,   this.player.movingObject,  1);
+	this.attribSetup(this.sprites_shader_program.attribute_locations.aFlipped,  this.player.flippedObject, 1);
 
 	// TODO: player.bindTexture() に移動
 	// WebGL_API 25. 有効にするテクスチャユニットを指定(今回は0)
